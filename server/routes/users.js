@@ -71,69 +71,70 @@ router.put('/profile', authenticate, async (req, res) => {
       message: 'Server error',
       error: error.message
     });
+  }
+});
 
-    // @route   GET /api/users
-    // @desc    Get all users (Admin only)
-    // @access  Private/Admin
-    router.get('/', authenticate, isAdmin, checkDatabase, async (req, res) => {
-      try {
-        const users = await User.find({ role: 'student' })
-          .select('-password')
-          .sort({ createdAt: -1 });
+// @route   GET /api/users
+// @desc    Get all users (Admin only)
+// @access  Private/Admin
+router.get('/', authenticate, isAdmin, checkDatabase, async (req, res) => {
+  try {
+    const users = await User.find({ role: 'student' })
+      .select('-password')
+      .sort({ createdAt: -1 });
 
-        res.json({
-          success: true,
-          count: users.length,
-          users
-        });
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({
-          success: false,
-          message: 'Server error fetching users'
-        });
-      }
+    res.json({
+      success: true,
+      count: users.length,
+      users
     });
-
-    // @route   DELETE /api/users/:id
-    // @desc    Delete a user
-    // @access  Private/Admin
-    router.delete('/:id', authenticate, isAdmin, checkDatabase, async (req, res) => {
-      try {
-        const user = await User.findById(req.params.id);
-
-        if (!user) {
-          return res.status(404).json({
-            success: false,
-            message: 'User not found'
-          });
-        }
-
-        // Prevent deleting other admins (optional safeguard)
-        if (user.role === 'admin') {
-          return res.status(403).json({
-            success: false,
-            message: 'Cannot delete admin users'
-          });
-        }
-
-        // Using deleteOne() or findByIdAndDelete() instead of remove() which is deprecated
-        await User.findByIdAndDelete(req.params.id);
-
-        res.json({
-          success: true,
-          message: 'User deleted successfully',
-          deletedUserId: req.params.id
-        });
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).json({
-          success: false,
-          message: 'Server error deleting user'
-        });
-      }
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching users'
     });
   }
 });
+
+// @route   DELETE /api/users/:id
+// @desc    Delete a user
+// @access  Private/Admin
+router.delete('/:id', authenticate, isAdmin, checkDatabase, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Prevent deleting other admins (optional safeguard)
+    if (user.role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Cannot delete admin users'
+      });
+    }
+
+    // Using deleteOne() or findByIdAndDelete() instead of remove() which is deprecated
+    await User.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: 'User deleted successfully',
+      deletedUserId: req.params.id
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error deleting user'
+    });
+  }
+});
+
 
 module.exports = router;
