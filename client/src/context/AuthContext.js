@@ -23,18 +23,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check if user is logged in on app load
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchUser();
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
   // Fetch current user data
-  const fetchUser = async () => {
+  const fetchUser = React.useCallback(async () => {
     try {
       const response = await authAPI.getMe();
       setUser(response.data.user);
@@ -45,7 +35,17 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Check if user is logged in on app load
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchUser();
+    } else {
+      setLoading(false);
+    }
+  }, [fetchUser]);
 
   // Login function
   const login = async (email, password) => {
@@ -67,11 +67,10 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authAPI.register(userData);
-      // Do not log in automatically. User must verify email.
-      return {
-        success: true,
-        message: response.data.message
-      };
+      localStorage.setItem('token', response.data.token);
+      setUser(response.data.user);
+      setIsAuthenticated(true);
+      return { success: true };
     } catch (error) {
       console.error('Registration error:', error);
 

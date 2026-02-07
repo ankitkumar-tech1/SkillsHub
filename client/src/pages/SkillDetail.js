@@ -9,7 +9,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { skillsAPI, messagesAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { FiClock, FiMapPin, FiUser, FiSend, FiTrash2, FiEdit, FiArrowLeft, FiMessageCircle } from 'react-icons/fi';
+import { FiClock, FiUser, FiTrash2, FiEdit, FiArrowLeft, FiMessageCircle } from 'react-icons/fi';
 
 const SkillDetail = () => {
   const { id } = useParams();
