@@ -21,8 +21,9 @@ const SkillDetail = () => {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-  fetchUser();
-}, [fetchUser]);
+  fetchSkill();
+}, [fetchSkill]);
+
 
   const fetchSkill = async () => {
     try {

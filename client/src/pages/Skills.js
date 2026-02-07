@@ -20,8 +20,10 @@ const Skills = () => {
   const categories = ['Programming', 'Design', 'Languages', 'Music', 'Sports', 'Academics', 'Other'];
 
  useEffect(() => {
-  fetchUser();
-}, [fetchUser]);
+  fetchSkills();
+}, [fetchSkills]);
+
+
 
   const fetchSkills = async () => {
     setLoading(true);
