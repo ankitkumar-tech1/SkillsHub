@@ -34,24 +34,24 @@ const Profile = () => {
   });
 
   useEffect(() => {
-  if (user) {
-    setFormData({
-      name: user.name || '',
-      college: user.college || '',
-      course: user.course || '',
-      year: user.year || '',
-      bio: user.bio || ''
-    });
-    fetchUserSkills();
-  }
-}, [user, fetchUserSkills]);
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        college: user.college || '',
+        course: user.course || '',
+        year: user.year || '',
+        bio: user.bio || ''
+      });
+      fetchUserSkills();
+    }
+  }, [user, fetchUserSkills]);
 
 
   const fetchUserSkills = async () => {
     try {
       const response = await skillsAPI.getAll();
       const userSkills = response.data.skills.filter(
-        skill => skill.postedBy._id === user?.id
+        skill => skill.postedBy?._id === user?.id
       );
       setSkills(userSkills);
     } catch (error) {
@@ -366,11 +366,10 @@ const Profile = () => {
               <h3 className="text-xl font-semibold mb-2">{skill.title}</h3>
               <p className="text-gray-600 mb-4 line-clamp-3">{skill.description}</p>
               <div className="flex items-center justify-between">
-                <span className={`text-sm px-2 py-1 rounded ${
-                  skill.type === 'teaching' 
-                    ? 'bg-green-100 text-green-700' 
+                <span className={`text-sm px-2 py-1 rounded ${skill.type === 'teaching'
+                    ? 'bg-green-100 text-green-700'
                     : 'bg-blue-100 text-blue-700'
-                }`}>
+                  }`}>
                   {skill.type === 'teaching' ? 'Teaching' : 'Learning'}
                 </span>
                 <Link
