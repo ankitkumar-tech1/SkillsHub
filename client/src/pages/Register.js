@@ -52,14 +52,17 @@ const Register = () => {
 
     const { confirmPassword, ...userData } = formData;
     const result = await register(userData);
-    
+
     if (result.success) {
-      navigate('/');
+      // Show success message instead of navigating
+      setLoading(false);
+      // You might want to add a success state to the component to render a success UI
+      alert(result.message); // Temporary feedback
+      navigate('/login');
     } else {
       setError(result.message);
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (

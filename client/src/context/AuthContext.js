@@ -67,13 +67,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authAPI.register(userData);
-      localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
-      setIsAuthenticated(true);
-      return { success: true };
+      // Do not log in automatically. User must verify email.
+      return {
+        success: true,
+        message: response.data.message
+      };
     } catch (error) {
       console.error('Registration error:', error);
-      
+
       // Handle network errors
       if (!error.response) {
         return {
@@ -81,12 +82,12 @@ export const AuthProvider = ({ children }) => {
           message: 'Network error. Please check if the server is running on port 5000.'
         };
       }
-      
+
       // Handle specific error messages from server
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.error || 
-                          'Registration failed';
-      
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Registration failed';
+
       return {
         success: false,
         message: errorMessage

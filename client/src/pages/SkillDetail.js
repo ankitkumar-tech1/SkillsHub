@@ -9,7 +9,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { skillsAPI, messagesAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiMail, FiMessageCircle, FiArrowLeft, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiUser, FiSend, FiTrash2, FiEdit, FiArrowLeft, FiMessageCircle } from 'react-icons/fi';
 
 const SkillDetail = () => {
   const { id } = useParams();
@@ -87,7 +87,7 @@ const SkillDetail = () => {
     );
   }
 
-  const isOwner = isAuthenticated && user?.id === skill.postedBy._id;
+  const isOwner = isAuthenticated && (user?._id || user?.id) === skill.postedBy._id;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -108,33 +108,37 @@ const SkillDetail = () => {
           {/* Header */}
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
-                  {skill.category}
-                </span>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{skill.title}</h1>
+              <div className="flex items-center space-x-4 mb-4">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${skill.type === 'teaching'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-blue-100 text-blue-700'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-green-100 text-green-800'
                   }`}>
                   {skill.type === 'teaching' ? 'Teaching' : 'Learning'}
                 </span>
-                <span className="text-sm text-gray-500">{skill.level}</span>
+                <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                  {skill.category}
+                </span>
+                <span className="text-gray-500 text-sm flex items-center">
+                  <FiClock className="mr-1" />
+                  {new Date(skill.createdAt).toLocaleDateString()}
+                </span>
               </div>
-              <h1 className="text-3xl font-bold mb-4">{skill.title}</h1>
             </div>
+
             {isOwner && (
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <Link
                   to={`/skills/${id}/edit`}
-                  className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg"
+                  className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  <FiEdit />
+                  <FiEdit className="mr-2" /> Edit
                 </Link>
                 <button
                   onClick={handleDelete}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  className="flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
                 >
-                  <FiTrash2 />
+                  <FiTrash2 className="mr-2" /> Delete
                 </button>
               </div>
             )}

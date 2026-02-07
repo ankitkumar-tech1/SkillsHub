@@ -44,7 +44,11 @@ router.post('/register', checkDatabase, async (req, res) => {
       });
     }
 
-    // Create new user
+    // Generate verification token
+    const verificationToken = require('crypto').randomBytes(20).toString('hex');
+    const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    // Create new user (unverified)
     const user = new User({
       name,
       email: email.toLowerCase(),
@@ -52,27 +56,52 @@ router.post('/register', checkDatabase, async (req, res) => {
       college: college || '',
       course: course || '',
       year: year || '',
-      role: (req.body.adminSecret === process.env.ADMIN_SECRET || req.body.adminSecret === 'admin123') ? 'admin' : 'student'
+      role: (req.body.adminSecret === process.env.ADMIN_SECRET || req.body.adminSecret === 'admin123') ? 'admin' : 'student',
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpires
     });
 
     await user.save();
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Create verification URL
+    // In production, use process.env.CLIENT_URL
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    const verifyUrl = `${clientUrl}/verify-email/${verificationToken}`;
 
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
+    const message = `
+      <h1>Email Verification</h1>
+      <p>Please click the link below to verify your email address:</p>
+      <a href="${verifyUrl}" clicktracking=off>${verifyUrl}</a>
+      <p>This link expires in 24 hours.</p>
+    `;
+
+    try {
+      await require('../utils/sendEmail')({
         email: user.email,
-        college: user.college,
-        course: user.course,
-        year: user.year
-      }
-    });
+        subject: 'SkillsHub - Email Verification',
+        message
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Registration successful! Please check your email to verify your account.',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email
+        }
+      });
+    } catch (emailError) {
+      console.error('Email send error:', emailError);
+      // Optional: Delete user if email fails? Or just return error
+      // await User.findByIdAndDelete(user._id);
+
+      return res.status(500).json({
+        success: false,
+        message: 'User registered, but email could not be sent. Please contact support.'
+      });
+    }
   } catch (error) {
     console.error('Registration error:', error);
 
@@ -142,6 +171,14 @@ router.post('/login', checkDatabase, async (req, res) => {
       });
     }
 
+    // Check if verified
+    if (!user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email address first.'
+      });
+    }
+
     // Generate token
     const token = generateToken(user._id);
 
@@ -191,6 +228,52 @@ router.get('/me', authenticate, async (req, res) => {
       success: false,
       message: 'Server error',
       error: error.message
+    });
+  }
+});
+
+// @route   POST /api/auth/verify-email
+// @desc    Verify email with token
+// @access  Public
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token'
+      });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    const authToken = generateToken(user._id);
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully',
+      token: authToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error("Verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during verification'
     });
   }
 });

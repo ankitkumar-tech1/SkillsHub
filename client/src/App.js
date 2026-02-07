@@ -20,6 +20,8 @@ import Skills from './pages/Skills';
 import SkillDetail from './pages/SkillDetail';
 import Profile from './pages/Profile';
 import Messages from './pages/Messages';
+import VerifyEmail from './pages/VerifyEmail';
+import EditSkill from './pages/EditSkill';
 
 // Admin Pages
 import AdminRoute from './components/AdminRoute';
@@ -41,6 +43,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/skills" element={<Skills />} />
               <Route path="/skills/:id" element={<SkillDetail />} />
+              <Route path="/skills/:id/edit" element={<EditSkill />} />
+              <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
               {/* Private Routes */}
               <Route

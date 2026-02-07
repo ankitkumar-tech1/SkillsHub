@@ -43,7 +43,7 @@ const Profile = () => {
     try {
       const response = await skillsAPI.getAll();
       const userSkills = response.data.skills.filter(
-        skill => skill.postedBy?._id === user?.id
+        skill => skill.postedBy?._id === (user?._id || user?.id)
       );
       setSkills(userSkills);
     } catch (error) {
@@ -361,8 +361,8 @@ const Profile = () => {
               <p className="text-gray-600 mb-4 line-clamp-3">{skill.description}</p>
               <div className="flex items-center justify-between">
                 <span className={`text-sm px-2 py-1 rounded ${skill.type === 'teaching'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-blue-100 text-blue-700'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-blue-100 text-blue-700'
                   }`}>
                   {skill.type === 'teaching' ? 'Teaching' : 'Learning'}
                 </span>
