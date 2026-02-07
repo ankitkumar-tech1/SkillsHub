@@ -225,8 +225,8 @@ router.delete('/:id', authenticate, async (req, res) => {
       });
     }
 
-    // Check if user owns this skill
-    if (skill.postedBy.toString() !== req.user._id.toString()) {
+    // Check if user owns this skill or is admin
+    if (skill.postedBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to delete this skill'

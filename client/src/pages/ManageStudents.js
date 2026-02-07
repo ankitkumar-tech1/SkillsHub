@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const ManageStudents = () => {
     const [users, setUsers] = useState([]);
@@ -8,10 +8,7 @@ const ManageStudents = () => {
 
     const fetchUsers = React.useCallback(async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('https://skillshub-backend.onrender.com/', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/users');
 
             if (response.data.success) {
                 setUsers(response.data.users);
@@ -34,10 +31,7 @@ const ManageStudents = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.delete(`https://skillshub-backend.onrender.com/api/users/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.delete(`/users/${userId}`);
 
             if (response.data.success) {
                 // Remove user from local state

@@ -7,6 +7,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Skill = require('../models/Skill');
 const authenticate = require('../middleware/auth');
 const isAdmin = require('../middleware/admin');
 const checkDatabase = require('../middleware/dbCheck');
@@ -118,6 +119,9 @@ router.delete('/:id', authenticate, isAdmin, checkDatabase, async (req, res) => 
         message: 'Cannot delete admin users'
       });
     }
+
+    // Delete all skills posted by this user
+    await Skill.deleteMany({ postedBy: req.params.id });
 
     // Using deleteOne() or findByIdAndDelete() instead of remove() which is deprecated
     await User.findByIdAndDelete(req.params.id);

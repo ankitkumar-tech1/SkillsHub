@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { FiTrash2, FiSearch, FiFilter } from 'react-icons/fi';
 
@@ -13,12 +13,7 @@ const ManageSkills = () => {
 
     const fetchSkills = React.useCallback(async () => {
         try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            };
-            const res = await axios.get('https://skillshub-backend.onrender.com/api/skills/admin/all', config);
+            const res = await api.get('/skills/admin/all');
             setSkills(res.data.skills);
             setLoading(false);
         } catch (err) {
@@ -26,7 +21,7 @@ const ManageSkills = () => {
             setLoading(false);
             console.error(err);
         }
-    }, [token]);
+    }, []);
 
     useEffect(() => {
         fetchSkills();
@@ -35,12 +30,7 @@ const ManageSkills = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this skill?')) {
             try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                };
-                await axios.delete(`https://skillshub-backend.onrender.com/api/skills/${id}`, config);
+                await api.delete(`/skills/${id}`);
                 setSkills(skills.filter(skill => skill._id !== id));
             } catch (err) {
                 alert('Failed to delete skill');
