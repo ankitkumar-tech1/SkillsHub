@@ -22,7 +22,7 @@ const ManageSkills = () => {
                     Authorization: `Bearer ${token}`
                 }
             };
-            const res = await axios.get('http://localhost:5000/api/skills/admin/all', config);
+            const res = await axios.get('https://skillshub-backend.onrender.com/api/skills/admin/all', config);
             setSkills(res.data.skills);
             setLoading(false);
         } catch (err) {
@@ -40,7 +40,7 @@ const ManageSkills = () => {
                         Authorization: `Bearer ${token}`
                     }
                 };
-                await axios.delete(`http://localhost:5000/api/skills/${id}`, config);
+                await axios.delete(`https://skillshub-backend.onrender.com/api/skills/${id}`, config);
                 setSkills(skills.filter(skill => skill._id !== id));
             } catch (err) {
                 alert('Failed to delete skill');

@@ -13,7 +13,7 @@ const ManageStudents = () => {
     const fetchUsers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:5000/api/users', {
+            const response = await axios.get('https://skillshub-backend.onrender.com/', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -35,7 +35,7 @@ const ManageStudents = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+            const response = await axios.delete(`https://skillshub-backend.onrender.com/api/users/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

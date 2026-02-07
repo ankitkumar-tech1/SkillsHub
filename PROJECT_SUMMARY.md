@@ -110,8 +110,8 @@ project mini_1/
    ```
 
 3. **Access Application:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
+   - Frontend: https://skills-hub-app.vercel.app/
+   - Backend API: https://skillshub-backend.onrender.com/
 
 ## 🔐 Security Features
 

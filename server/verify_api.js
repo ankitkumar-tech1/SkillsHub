@@ -4,8 +4,8 @@ const testAdminAPI = async () => {
     const id = setTimeout(() => controller.abort(), timeout);
 
     try {
-        console.log('1. Attempting login to http://localhost:5000/api/auth/login ...');
-        const loginResponse = await fetch('http://localhost:5000/api/auth/login', {
+        console.log('1. Attempting login to https://skills-hub-app.vercel.app/api/auth/login ...');
+        const loginResponse = await fetch('https://skills-hub-app.vercel.app/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -24,8 +24,8 @@ const testAdminAPI = async () => {
         if (loginData.success) {
             const token = loginData.token;
 
-            console.log('2. Attempting to fetch users from http://localhost:5000/api/users ...');
-            const usersResponse = await fetch('http://localhost:5000/api/users', {
+            console.log('2. Attempting to fetch users from https://skills-hub-app.vercel.app/api/users ...');
+            const usersResponse = await fetch('https://skills-hub-app.vercel.app/api/users', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
