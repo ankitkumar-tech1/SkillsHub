@@ -2,7 +2,6 @@
   "name": "skills-marketplace-client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://skillshub-backend.onrender.com/,
   "dependencies": {
     "axios": "^1.5.0",
     "framer-motion": "^10.16.4",
@@ -25,20 +24,6 @@
     "tailwindcss": "^3.3.3"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "extends": ["react-app"]
   }
 }
