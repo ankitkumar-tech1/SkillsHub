@@ -4,7 +4,7 @@
  * User profile management and skill posting.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -12,19 +12,21 @@ import { skillsAPI, usersAPI } from '../utils/api';
 import { FiUser, FiEdit, FiPlus, FiTrash2, FiBook } from 'react-icons/fi';
 
 const Profile = () => {
+  // 1. Hooks & Context
   const { user, fetchUser } = useAuth();
 
+  // 2. State Definitions
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showSkillForm, setShowSkillForm] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    college: user?.college || '',
-    course: user?.course || '',
-    year: user?.year || '',
-    bio: user?.bio || ''
+    name: '',
+    college: '',
+    course: '',
+    year: '',
+    bio: ''
   });
 
   const [skillData, setSkillData] = useState({
@@ -36,10 +38,8 @@ const Profile = () => {
     availability: 'Flexible'
   });
 
-  /* ================================
-     FETCH USER SKILLS (MOVED UP)
-     ================================ */
-  const fetchUserSkills = async () => {
+  // 3. Helper Functions (Memoized)
+  const fetchUserSkills = useCallback(async () => {
     try {
       const response = await skillsAPI.getAll();
       const userSkills = response.data.skills.filter(
@@ -51,11 +51,9 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  /* ================================
-     USE EFFECT
-     ================================ */
+  // 4. Effects
   useEffect(() => {
     if (user) {
       setFormData({
@@ -67,11 +65,9 @@ const Profile = () => {
       });
       fetchUserSkills();
     }
-  }, [user]);
+  }, [user, fetchUserSkills]);
 
-  /* ================================
-     HANDLERS
-     ================================ */
+  // 5. Event Handlers
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -114,9 +110,7 @@ const Profile = () => {
     }
   };
 
-  /* ================================
-     LOADING STATE
-     ================================ */
+  // 6. Loading State
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -125,9 +119,7 @@ const Profile = () => {
     );
   }
 
-  /* ================================
-     JSX
-     ================================ */
+  // 7. Render
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -189,7 +181,7 @@ const Profile = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, [field]: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 ))}
@@ -201,21 +193,23 @@ const Profile = () => {
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   rows="4"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
               <div className="flex space-x-3">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="bg-primary-600 text-white px-6 py-2 rounded-lg"
+                  className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
                 >
                   Save Changes
-                </button>
+                </motion.button>
                 <button
                   type="button"
                   onClick={() => setShowEditForm(false)}
-                  className="bg-gray-200 px-6 py-2 rounded-lg"
+                  className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300"
                 >
                   Cancel
                 </button>
@@ -227,39 +221,166 @@ const Profile = () => {
         {/* Skills Section */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">My Skills</h2>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowSkillForm(!showSkillForm)}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg"
+            className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
           >
-            <FiPlus /> Post New Skill
-          </button>
+            <FiPlus />
+            <span>Post New Skill</span>
+          </motion.button>
         </div>
+
+        {/* Post Skill Form */}
+        {showSkillForm && (
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onSubmit={handleSkillSubmit}
+            className="bg-white rounded-xl shadow-lg p-6 mb-8"
+          >
+            <h3 className="text-xl font-semibold mb-4">Post a New Skill</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <input
+                  type="text"
+                  required
+                  value={skillData.title}
+                  onChange={(e) => setSkillData({ ...skillData, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="e.g., JavaScript Programming"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  required
+                  value={skillData.description}
+                  onChange={(e) => setSkillData({ ...skillData, description: e.target.value })}
+                  rows="4"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Describe what you can teach or want to learn..."
+                />
+              </div>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select
+                    value={skillData.category}
+                    onChange={(e) => setSkillData({ ...skillData, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option>Programming</option>
+                    <option>Design</option>
+                    <option>Languages</option>
+                    <option>Music</option>
+                    <option>Sports</option>
+                    <option>Academics</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    value={skillData.type}
+                    onChange={(e) => setSkillData({ ...skillData, type: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="teaching">Teaching</option>
+                    <option value="learning">Learning</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+                  <select
+                    value={skillData.level}
+                    onChange={(e) => setSkillData({ ...skillData, level: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Availability</label>
+                <input
+                  type="text"
+                  value={skillData.availability}
+                  onChange={(e) => setSkillData({ ...skillData, availability: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="e.g., Weekends, Evening, Flexible"
+                />
+              </div>
+              <div className="flex space-x-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
+                >
+                  Post Skill
+                </motion.button>
+                <button
+                  type="button"
+                  onClick={() => setShowSkillForm(false)}
+                  className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </motion.form>
+        )}
 
         {/* Skills List */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill) => (
-            <div key={skill._id} className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex justify-between mb-3">
-                <span className="text-sm font-medium">{skill.category}</span>
-                <button onClick={() => handleDeleteSkill(skill._id)}>
+          {skills.map((skill, index) => (
+            <motion.div
+              key={skill._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+                  {skill.category}
+                </span>
+                <button
+                  onClick={() => handleDeleteSkill(skill._id)}
+                  className="text-red-600 hover:text-red-700"
+                >
                   <FiTrash2 />
                 </button>
               </div>
-              <h3 className="text-xl font-semibold">{skill.title}</h3>
-              <p className="text-gray-600 mb-4">{skill.description}</p>
-              <Link to={`/skills/${skill._id}`} className="text-primary-600">
-                View →
-              </Link>
-            </div>
+              <h3 className="text-xl font-semibold mb-2">{skill.title}</h3>
+              <p className="text-gray-600 mb-4 line-clamp-3">{skill.description}</p>
+              <div className="flex items-center justify-between">
+                <span className={`text-sm px-2 py-1 rounded ${skill.type === 'teaching'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-blue-100 text-blue-700'
+                  }`}>
+                  {skill.type === 'teaching' ? 'Teaching' : 'Learning'}
+                </span>
+                <Link
+                  to={`/skills/${skill._id}`}
+                  className="text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  View →
+                </Link>
+              </div>
+            </motion.div>
           ))}
         </div>
 
         {skills.length === 0 && (
           <div className="text-center py-12 bg-white rounded-xl">
             <FiBook className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">
-              No skills posted yet. Post your first skill!
-            </p>
+            <p className="text-gray-500 text-lg">No skills posted yet. Post your first skill!</p>
           </div>
         )}
       </div>

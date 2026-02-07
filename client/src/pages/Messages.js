@@ -17,22 +17,7 @@ const Messages = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
- useEffect(() => {
-  fetchConversations();
-}, [fetchConversations]);
-
-
-  useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation.user._id);
-      const interval = setInterval(() => {
-        fetchMessages(selectedConversation.user._id);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [selectedConversation]);
-
-  const fetchConversations = async () => {
+  const fetchConversations = React.useCallback(async () => {
     try {
       const response = await messagesAPI.getConversations();
       setConversations(response.data.conversations);
@@ -44,16 +29,31 @@ const Messages = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedConversation]);
 
-  const fetchMessages = async (userId) => {
+  const fetchMessages = React.useCallback(async (userId) => {
     try {
       const response = await messagesAPI.getConversation(userId);
       setMessages(response.data.messages);
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+
+  useEffect(() => {
+    if (selectedConversation) {
+      fetchMessages(selectedConversation.user._id);
+      const interval = setInterval(() => {
+        fetchMessages(selectedConversation.user._id);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedConversation, fetchMessages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -104,11 +104,10 @@ const Messages = () => {
                       key={conv.user._id}
                       whileHover={{ backgroundColor: '#f3f4f6' }}
                       onClick={() => setSelectedConversation(conv)}
-                      className={`p-4 border-b cursor-pointer ${
-                        selectedConversation?.user._id === conv.user._id
-                          ? 'bg-primary-50'
-                          : ''
-                      }`}
+                      className={`p-4 border-b cursor-pointer ${selectedConversation?.user._id === conv.user._id
+                        ? 'bg-primary-50'
+                        : ''
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -146,25 +145,22 @@ const Messages = () => {
                         key={msg._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${
-                          msg.sender._id === selectedConversation.user._id
-                            ? 'justify-start'
-                            : 'justify-end'
-                        }`}
+                        className={`flex ${msg.sender._id === selectedConversation.user._id
+                          ? 'justify-start'
+                          : 'justify-end'
+                          }`}
                       >
                         <div
-                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                            msg.sender._id === selectedConversation.user._id
-                              ? 'bg-gray-200 text-gray-800'
-                              : 'bg-primary-600 text-white'
-                          }`}
+                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${msg.sender._id === selectedConversation.user._id
+                            ? 'bg-gray-200 text-gray-800'
+                            : 'bg-primary-600 text-white'
+                            }`}
                         >
                           <p>{msg.content}</p>
-                          <p className={`text-xs mt-1 ${
-                            msg.sender._id === selectedConversation.user._id
-                              ? 'text-gray-500'
-                              : 'text-primary-100'
-                          }`}>
+                          <p className={`text-xs mt-1 ${msg.sender._id === selectedConversation.user._id
+                            ? 'text-gray-500'
+                            : 'text-primary-100'
+                            }`}>
                             {new Date(msg.createdAt).toLocaleTimeString()}
                           </p>
                         </div>

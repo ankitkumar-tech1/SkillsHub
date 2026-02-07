@@ -19,13 +19,7 @@ const Skills = () => {
 
   const categories = ['Programming', 'Design', 'Languages', 'Music', 'Sports', 'Academics', 'Other'];
 
- useEffect(() => {
-  fetchSkills();
-}, [fetchSkills]);
-
-
-
-  const fetchSkills = async () => {
+  const fetchSkills = React.useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -40,7 +34,11 @@ const Skills = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, category, type]);
+
+  useEffect(() => {
+    fetchSkills();
+  }, [fetchSkills]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -144,11 +142,10 @@ const Skills = () => {
                   <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
                     {skill.category}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    skill.type === 'teaching' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-blue-100 text-blue-700'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${skill.type === 'teaching'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-blue-100 text-blue-700'
+                    }`}>
                     {skill.type === 'teaching' ? 'Teaching' : 'Learning'}
                   </span>
                 </div>

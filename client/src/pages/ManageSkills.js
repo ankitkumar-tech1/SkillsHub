@@ -11,11 +11,7 @@ const ManageSkills = () => {
     const { token } = useAuth();
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchSkills();
-    }, []);
-
-    const fetchSkills = async () => {
+    const fetchSkills = React.useCallback(async () => {
         try {
             const config = {
                 headers: {
@@ -30,7 +26,11 @@ const ManageSkills = () => {
             setLoading(false);
             console.error(err);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        fetchSkills();
+    }, [fetchSkills]);
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this skill?')) {

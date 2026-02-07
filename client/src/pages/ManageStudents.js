@@ -6,11 +6,7 @@ const ManageStudents = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const fetchUsers = async () => {
+    const fetchUsers = React.useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get('https://skillshub-backend.onrender.com/', {
@@ -26,7 +22,11 @@ const ManageStudents = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
 
     const handleDelete = async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {

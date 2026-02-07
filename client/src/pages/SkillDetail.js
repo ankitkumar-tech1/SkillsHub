@@ -20,12 +20,7 @@ const SkillDetail = () => {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
 
-  useEffect(() => {
-  fetchSkill();
-}, [fetchSkill]);
-
-
-  const fetchSkill = async () => {
+  const fetchSkill = React.useCallback(async () => {
     try {
       const response = await skillsAPI.getById(id);
       setSkill(response.data.skill);
@@ -34,7 +29,11 @@ const SkillDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchSkill();
+  }, [fetchSkill]);
 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
@@ -113,11 +112,10 @@ const SkillDetail = () => {
                 <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
                   {skill.category}
                 </span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  skill.type === 'teaching' 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-blue-100 text-blue-700'
-                }`}>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${skill.type === 'teaching'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-blue-100 text-blue-700'
+                  }`}>
                   {skill.type === 'teaching' ? 'Teaching' : 'Learning'}
                 </span>
                 <span className="text-sm text-gray-500">{skill.level}</span>
@@ -164,13 +162,13 @@ const SkillDetail = () => {
                 <FiUser className="w-8 h-8 text-primary-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{skill.postedBy.name}</h3>
-                <p className="text-gray-600">{skill.postedBy.email}</p>
-                {skill.postedBy.college && (
-                  <p className="text-sm text-gray-500">{skill.postedBy.college}</p>
+                <h3 className="font-semibold text-lg">{skill.postedBy?.name}</h3>
+                <p className="text-gray-600">{skill.postedBy?.email}</p>
+                {skill.postedBy?.college && (
+                  <p className="text-sm text-gray-500">{skill.postedBy?.college}</p>
                 )}
-                {skill.postedBy.course && (
-                  <p className="text-sm text-gray-500">{skill.postedBy.course} - {skill.postedBy.year}</p>
+                {skill.postedBy?.course && (
+                  <p className="text-sm text-gray-500">{skill.postedBy?.course} - {skill.postedBy?.year}</p>
                 )}
               </div>
             </div>
