@@ -22,6 +22,18 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Add more admin cards here in future */}
+                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    <h2 className="text-xl font-semibold mb-3">Manage Skills</h2>
+                    <p className="text-gray-600 mb-4">
+                        View all skills posted by students and remove inappropriate content.
+                    </p>
+                    <Link
+                        to="/admin/skills"
+                        className="inline-block bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+                    >
+                        View Skills
+                    </Link>
+                </div>
             </div>
         </div>
     );

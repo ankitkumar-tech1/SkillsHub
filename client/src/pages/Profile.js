@@ -34,17 +34,18 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        college: user.college || '',
-        course: user.course || '',
-        year: user.year || '',
-        bio: user.bio || ''
-      });
-      fetchUserSkills();
-    }
-  }, [user]);
+  if (user) {
+    setFormData({
+      name: user.name || '',
+      college: user.college || '',
+      course: user.course || '',
+      year: user.year || '',
+      bio: user.bio || ''
+    });
+    fetchUserSkills();
+  }
+}, [user, fetchUserSkills]);
+
 
   const fetchUserSkills = async () => {
     try {

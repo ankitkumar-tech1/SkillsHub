@@ -17,9 +17,10 @@ const Messages = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
-  useEffect(() => {
-    fetchConversations();
-  }, []);
+ useEffect(() => {
+  fetchConversations();
+}, [fetchConversations]);
+
 
   useEffect(() => {
     if (selectedConversation) {

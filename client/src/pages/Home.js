@@ -34,7 +34,7 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-600 to-primary-400 text-white py-20">
+      <section className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white py-12 px-6 md:py-24 md:px-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -89,7 +89,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
             How It Works
@@ -118,7 +118,7 @@ const Home = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.2 }}
                 whileHover={{ scale: 1.05 }}
-                className="text-center p-6 rounded-xl bg-gray-50 hover:bg-primary-50 transition-colors"
+                className="text-center p-6 rounded-xl bg-white hover:bg-white shadow-sm hover:shadow-md transition-all"
               >
                 <div className="text-primary-600 mb-4 flex justify-center">
                   {feature.icon}
@@ -132,7 +132,7 @@ const Home = () => {
       </section>
 
       {/* Featured Skills */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
             Featured Skills
