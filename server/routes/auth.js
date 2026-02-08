@@ -52,7 +52,7 @@ router.post('/register', checkDatabase, async (req, res) => {
       college: college || '',
       course: course || '',
       year: year || '',
-      role: (req.body.adminSecret === process.env.ADMIN_SECRET || req.body.adminSecret === 'admin123') ? 'admin' : 'student',
+      role: (req.body.adminSecret === process.env.ADMIN_SECRET || req.body.adminSecret === 'admin123') && email.toLowerCase() === 'ankitkumar2431967@gmail.com' ? 'admin' : 'student',
     });
 
     await user.save();

@@ -73,7 +73,7 @@ const Navbar = () => {
                 >
                   <span>{user?.name}</span>
                 </Link>
-                {user?.role === 'admin' && (
+                {user?.role === 'admin' && user?.email === 'ankitkumar2431967@gmail.com' && (
                   <Link
                     to="/admin"
                     className="text-gray-700 hover:text-primary-600 transition-colors flex items-center space-x-1"
@@ -159,7 +159,7 @@ const Navbar = () => {
                 >
                   Profile
                 </Link>
-                {user?.role === 'admin' && (
+                {user?.role === 'admin' && user?.email === 'ankitkumar2431967@gmail.com' && (
                   <Link
                     to="/admin"
                     onClick={() => setMobileMenuOpen(false)}

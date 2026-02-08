@@ -9,8 +9,8 @@ const AdminRoute = ({ children }) => {
         return <div>Loading...</div>;
     }
 
-    // Check if user is logged in and has admin role
-    if (!user || user.role !== 'admin') {
+    // Check if user is logged in and has admin role AND is the specific admin
+    if (!user || user.role !== 'admin' || user.email !== 'ankitkumar2431967@gmail.com') {
         return <Navigate to="/" />;
     }
 

@@ -9,10 +9,13 @@ const isAdmin = async (req, res, next) => {
     try {
         // Check if user exists and has admin role
         // req.user is set by the authenticate middleware
-        if (!req.user || req.user.role !== 'admin') {
+        // STRICT CHECK: Only ankitkumar2431967@gmail.com can be admin
+        const ADMIN_EMAIL = 'ankitkumar2431967@gmail.com';
+
+        if (!req.user || req.user.role !== 'admin' || req.user.email !== ADMIN_EMAIL) {
             return res.status(403).json({
                 success: false,
-                message: 'Access denied. Admin privileges required.'
+                message: 'Access denied. Admin privileges restricted to authorized account only.'
             });
         }
 
